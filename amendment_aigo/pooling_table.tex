@@ -1,0 +1,59 @@
+
+
+\begin{table}
+\centering
+\begin{talltblr}[         
+caption={Regression Results},
+entry=none,label=none,
+note{ }={+ p < 0.1; * p < 0.05; ** p < 0.01; *** p < 0.001},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]Q[]},
+column{1}={halign=l,},
+column{2}={halign=c,},
+column{3}={halign=c,},
+column{4}={halign=c,},
+column{5}={halign=c,},
+hline{32}={1,2,3,4,5}{solid, 0.05em, black},
+}                     %% tabularray inner close
+\toprule
+& Baseline & Polyarchy Median & Polyarchy Mean & Percentage \\ \midrule %% TinyTableHeader
+polyarchy          & \num{0.036}*  &                  & \num{-0.426}*** &                  \\
+& (\num{0.018}) &                  & (\num{0.037})   &                  \\
+polyarchy\_median &                & \num{-0.190}*** &                  &                  \\
+&                & (\num{0.029})   &                  &                  \\
+gdp\_cap          &                & \num{0.021}*    & \num{0.018}+    & \num{0.027}**   \\
+&                & (\num{0.010})   & (\num{0.010})   & (\num{0.010})   \\
+population         &                & \num{-0.004}    & \num{-0.033}*** & \num{-0.004}    \\
+&                & (\num{0.010})   & (\num{0.010})   & (\num{0.009})   \\
+trade              &                & \num{-0.122}*** & \num{-0.139}*** & \num{-0.129}*** \\
+&                & (\num{0.021})   & (\num{0.021})   & (\num{0.021})   \\
+globalization      &                & \num{-0.001}    & \num{0.002}*    & \num{-0.001}    \\
+&                & (\num{0.001})   & (\num{0.001})   & (\num{0.001})   \\
+number             &                & \num{-0.000}*** & \num{-0.000}*** & \num{-0.000}*** \\
+&                & (\num{0.000})   & (\num{0.000})   & (\num{0.000})   \\
+political          &                & \num{0.004}     & \num{0.008}     & \num{0.008}     \\
+&                & (\num{0.009})   & (\num{0.009})   & (\num{0.009})   \\
+social             &                & \num{-0.053}*** & \num{-0.052}*** & \num{-0.047}*** \\
+&                & (\num{0.011})   & (\num{0.010})   & (\num{0.010})   \\
+colonial           &                & \num{-0.109}*** & \num{-0.126}*** & \num{-0.091}*** \\
+&                & (\num{0.022})   & (\num{0.022})   & (\num{0.022})   \\
+polyarchy\_sd     &                & \num{0.581}***  & \num{0.573}***  & \num{0.587}***  \\
+&                & (\num{0.080})   & (\num{0.078})   & (\num{0.080})   \\
+hh\_gdp           &                & \num{0.502}***  & \num{0.412}***  & \num{0.429}***  \\
+&                & (\num{0.066})   & (\num{0.065})   & (\num{0.067})   \\
+hh\_poly          &                & \num{-0.486}**  & \num{-0.530}**  & \num{-0.436}*   \\
+&                & (\num{0.174})   & (\num{0.171})   & (\num{0.173})   \\
+ideal\_sd         &                & \num{-0.063}**  & \num{-0.061}**  & \num{-0.079}*** \\
+&                & (\num{0.020})   & (\num{0.020})   & (\num{0.020})   \\
+percentage         &                &                  &                  & \num{-0.159}*** \\
+&                &                  &                  & (\num{0.021})   \\
+Num.Obs.           & \num{3285}    & \num{2686}      & \num{2686}      & \num{2686}      \\
+R2                 & \num{0.001}   & \num{0.093}     & \num{0.121}     & \num{0.097}     \\
+R2 Adj.            & \num{-0.021}  & \num{0.073}     & \num{0.102}     & \num{0.077}     \\
+AIC                & \num{-1343.4} & \num{-1439.6}   & \num{-1526.5}   & \num{-1452.8}   \\
+BIC                & \num{-1331.2} & \num{-1357.1}   & \num{-1444.0}   & \num{-1370.2}   \\
+RMSE               & \num{0.20}    & \num{0.18}      & \num{0.18}      & \num{0.18}      \\
+\bottomrule
+\end{talltblr}
+\end{table}

@@ -1,0 +1,217 @@
+---
+title: "Replication Code for Flex Paper"
+author: "Jihyeon bae"
+date: "June 10th 2025"
+output: html_document
+---
+
+# Setup and packages
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("pacman")
+p_load(plyr, dplyr, tidyr, ggplot2, tidyverse, RColorBrewer, readxl,
+       readr, haven, countrycode, clubSandwich, lmtest,plm,
+       rqog, igoR, modelsummary, knitr, kableExtra, flextable, unvotes)
+
+```
+
+# Loading Raw data
+```{r, echo=FALSE, warning=FALSE}
+
+igo_analysis <- readRDS("~/Downloads/MA_data.RDS")
+
+```
+
+---
+
+
+## Visualization
+```{r, warning=FALSE}
+library(gplots)
+plotmeans(poolconstit ~ year, main = "Variation across time", data = igo_analysis, 
+          n.label=FALSE)
+plotmeans(poolconstit ~ ioname, main = "Variation across IGOs", data = igo_analysis, 
+          n.label=FALSE, 
+          xlab="",
+      mar=c(10.1,4.1,4.1,2.1), 
+          las=2)
+```
+
+# Models
+```{r, eval=FALSE}
+
+y <- igo_analysis$poolconstit
+
+model0 <-plm(y
+            ~ polyarchy,
+            data = igo_analysis,
+            index = c("year"),
+            model = "within",
+            effect = "time"
+)
+summary(model0, vcovBK(model0, type="HC1", cluster="group"))
+
+```
+
+## Pooling 
+vcovHC creates heteroskedasticity-consistent errors
+```{r, eval=FALSE}
+model1 <-plm(y
+            ~ polyarchy_median+ gdp_cap + population + trade + globalization +
+              number + political + social
+            + economic + colonial + polyarchy_sd + hh_gdp + hh_poly + ideal_sd,
+            data = igo_analysis,
+             index = c("cow_igocode", "year"),  
+            model = "within",
+            effect = "time"
+)
+coeftest(model1, vcov=vcovBK(model1, type="HC1", cluster = "group"))
+
+
+model2 <-plm(y
+            ~ polyarchy + gdp_cap + population + trade + globalization +
+              number + political + social 
+             + colonial + polyarchy_sd + hh_gdp + hh_poly + ideal_sd ,
+            index = c("cow_igocode", "year"),  
+            data = igo_analysis,
+            model = "within",
+            effect = "time"
+)
+
+
+coeftest(model2, vcov=vcovBK(model2, type="HC1", cluster = c("group")))
+
+
+model3 <-plm(y
+            ~ percentage + gdp_cap + population + trade + globalization + number + political + social 
+             + colonial + polyarchy_sd + hh_gdp + hh_poly + ideal_sd ,
+            index = c("cow_igocode", "year"),  
+            data = igo_analysis,
+            model = "within",
+            effect = "time"
+)
+
+
+coeftest(model3, vcov=vcovBK(model3, type="HC1", cluster = c("group")))
+
+
+```
+## Delegation
+```{r, eval=FALSE}
+
+y2 <- igo_analysis$delconstit
+
+
+del0 <-plm(y2
+            ~ polyarchy,
+            data = igo_analysis,
+            index = c("year", "cow_igocode"),
+            model = "within",
+            effect = "time"
+)
+coeftest(del0, vcovBK(del0, type="HC1", cluster="group"))
+
+del1 <-plm(y2
+            ~ polyarchy_median+ gdp_cap + population + trade + globalization + alliances +
+              number + political + social
+             + colonial + polyarchy_sd + hh_gdp + hh_poly + ideal_sd,
+            data = igo_analysis,
+            index = c("year", "cow_igocode"),
+            model = "within",
+            effect = "time"
+)
+coeftest(del1, vcov=vcovBK(del1, type="HC1", cluster = "group"))
+
+del2 <-plm(y2
+            ~ polyarchy+ gdp_cap + population + trade + globalization + alliances +
+              number + political + social
+             + colonial + polyarchy_sd + hh_gdp + hh_poly + ideal_sd,
+            data = igo_analysis,
+            index = c("year", "cow_igocode"),
+            model = "within",
+            effect = "time"
+)
+coeftest(del2, vcov=vcovBK(del2, type="HC1", cluster = "group"))
+
+
+del3 <-plm(y2
+            ~ percentage+ gdp_cap + population + trade + globalization + alliances +
+              number + political + social
+             + colonial + polyarchy_sd + hh_gdp + hh_poly + ideal_sd,
+            data = igo_analysis,
+            index = c("year", "cow_igocode"),
+            model = "within",
+            effect = "time"
+)
+coeftest(del3, vcov=vcovBK(del3, type="HC1", cluster = c("group")))
+
+
+```
+
+# Results Visualization
+```{r}
+library(modelsummary)
+library(kableExtra)
+library(ggplot2)
+library(sandwich)
+library(clubSandwich)
+
+cm <- c('gdp_cap' = 'GDP Per Capita', 
+        'population' = 'Population',
+        'trade' = 'Trade', 
+        'globalization' = 'Globalization', 
+        'alliances' = 'Alliances',
+        'colonial' = 'Colonial',
+        'number' = 'Number',
+        'political' = 'Political',
+        'social' = 'Social',
+        'hh_gdp'= 'Economy HHI',
+        'hh_poly' = 'Polyarchy HHI',
+        'ideal_sd'='Preference Heterogeneity',
+        'polyarchy_sd' = 'Political Heterogeneity', 
+        'percentage' = 'Percentage',
+        'polyarchy_median' = 'Polyarchy Median',
+        'polyarchy' = 'Polyarchy')
+
+#Pooling
+models <- list("Baseline"=model0, "Polyarchy Median"=model1, "Polyarchy Mean"=model2, "Percentage"=model3) 
+
+
+library(kableExtra)
+
+modelsummary(models,
+  stars = TRUE,
+  coef_omit = "Interc",
+  output = "latex",
+  title = "Regression Results",
+  notes = list("+ p < 0.1; * p < 0.05; ** p < 0.01; *** p < 0.001"),
+  booktabs = TRUE,
+  escape = FALSE,
+  fmt = 3
+) %>%
+  save_kable("pooling_table_clean.tex")
+
+
+library(modelsummary)
+library(ggplot2)
+
+pooling_result <- modelplot(models, coef_omit = 'Interc', coef_map = cm) +
+   theme_minimal() +
+  scale_color_manual(values = c("grey50","grey30", "grey10", "black"))+
+  theme(text = element_text(family = "Times New Roman", size = 14))
+
+
+ggsave("pooling_result.pdf", plot = pooling_result, width = 6, height = 4)
+
+#Delegation
+models2 <- list("Baseline"=del0, "Polyarchy Median"=del1, "Polyarchy Mean"=del2, "Percentage"=del3) 
+
+modelsummary(models2,  
+             stars=TRUE,coef_map=cm,
+          coef_omit = 'Interc')
+
+modelplot(models2, coef_omit = 'Interc', coef_map=cm) +
+    theme(text = element_text(family = "Times New Roman", size = 14))
+
+```
