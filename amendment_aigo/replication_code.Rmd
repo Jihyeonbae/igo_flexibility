@@ -19,11 +19,10 @@ p_load(plyr, dplyr, tidyr, ggplot2, tidyverse, RColorBrewer, readxl,
 # Loading Raw data
 ```{r, echo=FALSE, warning=FALSE}
 
-igo_analysis <- readRDS("~/Downloads/MA_data.RDS")
+igo_analysis <- readRDS( "~/Desktop/igo_mia_2026.rds")
 
 ```
 
----
 
 
 ## Visualization
@@ -38,116 +37,357 @@ plotmeans(poolconstit ~ ioname, main = "Variation across IGOs", data = igo_analy
           las=2)
 ```
 
-# Models
-```{r, eval=FALSE}
+##Investating the y variable
+```{r}
+library(plm)
+library(dplyr)
+
+pdata <- pdata.frame(igo_analysis, index = c("cow_igocode", "year"))
+
+# --- 1. xtsum-style decomposition ---
+overall_var  <- var(igo_analysis$poolconstit, na.rm = TRUE)
+between_var  <- igo_analysis %>%
+  group_by(cow_igocode) %>%
+  summarise(m = mean(poolconstit, na.rm = TRUE)) %>%
+  summarise(v = var(m)) %>% pull(v)
+within_var   <- igo_analysis %>%
+  group_by(cow_igocode) %>%
+  mutate(demeaned = poolconstit - mean(poolconstit, na.rm = TRUE)) %>%
+  ungroup() %>%
+  summarise(v = var(demeaned, na.rm = TRUE)) %>% pull(v)
+
+cat("Overall variance:  ", round(overall_var, 4), "\n")
+cat("Between-IGO variance:", round(between_var, 4), "\n")
+cat("Within-IGO variance: ", round(within_var, 4), "\n")
+cat("Within share:        ", round(within_var / overall_var * 100, 1), "%\n")
+
+# --- 2. How many IGOs actually change poolconstit? ---
+switchers <- igo_analysis %>%
+  dplyr::group_by(cow_igocode) %>%
+  dplyr::summarise(
+    n_years      = n(),
+    n_changes    = sum(abs(diff(poolconstit)) > 0, na.rm = TRUE),
+    ever_changed = any(abs(diff(poolconstit)) > 0, na.rm = TRUE),
+    range        = max(poolconstit, na.rm = TRUE) - min(poolconstit, na.rm = TRUE)
+  )
+
+cat("\nIGOs that ever changed poolconstit:", sum(switchers$ever_changed), 
+    "out of", nrow(switchers), "\n")
+cat("Mean within-IGO range:", round(mean(switchers$range), 3), "\n")
+```
+
+
+```{r}
+detach("package:plyr", unload = TRUE)
+library(dplyr)
+
+# --- Priority 1: Cross-section at founding year (cleanest) ---
+founding <- igo_analysis %>%
+  dplyr::group_by(cow_igocode) %>%
+  dplyr::slice_min(year, n = 1, with_ties = FALSE) %>%
+  dplyr::ungroup()
+
+model_cs <- lm(poolconstit ~ polyarchy + gdp_cap + population +
+               trade  + number + political + social +
+               colonial +  hh_gdp + hh_poly + ideal_sd,
+               data = founding)
+coeftest(model_cs, vcov = vcovHC(model_cs, type = "HC1"))
+
+# --- Priority 2: Between estimator (IGO-mean regression) ---
+model_between <- plm(poolconstit ~ polyarchy + gdp_cap + population +
+                     trade  + number + political + social +
+                     colonial  + hh_gdp + hh_poly + ideal_sd,
+                     data = igo_analysis,
+                     index = c("cow_igocode", "year"),
+                     model = "between")
+summary(model_between)
+
+# --- Priority 3: Random effects (uses both between + within) ---
+model_re <- plm(poolconstit ~ polyarchy_median + gdp_cap + population +
+                trade  + number + political + social +
+                colonial  + hh_gdp + hh_poly + ideal_sd,
+                data = igo_analysis,
+                index = c("cow_igocode", "year"),
+                model = "random")
+
+
+# --- Priority 4: Switchers-only analysis ---
+# Tests whether the within-IGO changes that DO occur follow your theory
+switcher_igos <- switchers %>% 
+  dplyr::filter(ever_changed == TRUE) %>% 
+  dplyr::pull(cow_igocode)
+
+model_switchers <- plm(poolconstit ~ polyarchy + gdp_cap + population +
+                       trade  + number + political + social +
+                       colonial  + hh_gdp + hh_poly + ideal_sd,
+                       data = dplyr::filter(igo_analysis, 
+                                            cow_igocode %in% switcher_igos),
+                       index = c("cow_igocode", "year"),
+                       model = "within", effect = "twoways")
+coeftest(model_switchers, vcov = vcovBK(model_switchers, 
+                                         type = "HC1", cluster = "group"))
+```
+# Main  Model
+```{r}
+# Check the actual distribution of poolconstit
+table(round(igo_analysis$poolconstit, 3))
+
+# What share is exactly zero?
+mean(igo_analysis$poolconstit == 0, na.rm = TRUE)
+
+# What are the mass points? (recall: score = voting_rule × ratification_weight)
+# Possible values from your table:
+# 0.33×1.00 = 0.330, 0.66×0.25 = 0.165, 0.66×0.50 = 0.330, etc.
+hist(igo_analysis$poolconstit, breaks = 30, 
+     main = "Distribution of Constitutional Pooling",
+     xlab = "poolconstit")
+
+
 
 y <- igo_analysis$poolconstit
 
-model0 <-plm(y
-            ~ polyarchy,
-            data = igo_analysis,
-            index = c("year"),
-            model = "within",
-            effect = "time"
-)
-summary(model0, vcovBK(model0, type="HC1", cluster="group"))
+model1 <- plm(y ~ polyarchy_median + gdp_cap + population + trade +
+               number + political + social +
+              colonial + hh_gdp + hh_poly + ideal_sd,
+              data   = igo_analysis,
+              index  = c("cow_igocode", "year"),
+              model  = "within",
+              effect = "time")
+
+model2 <- plm(y ~ polyarchy + gdp_cap + population + trade +
+               number + political + social +
+              colonial + hh_gdp + hh_poly + ideal_sd,
+              data   = igo_analysis,
+              index  = c("cow_igocode", "year"),
+              model  = "within",
+              effect = "time")
+
+model3 <- plm(y ~ percentage + gdp_cap + population + trade +
+                number + political + social +
+              colonial + polyarchy_sd + hh_gdp + hh_poly + ideal_sd,
+              data   = igo_analysis,
+              index  = c("cow_igocode", "year"),
+              model  = "within",
+              effect = "time")
+
+# Results
+coeftest(model1, vcov = vcovBK(model1, type = "HC1", cluster = "group"))
+coeftest(model2, vcov = vcovBK(model2, type = "HC1", cluster = "group"))
+coeftest(model3, vcov = vcovBK(model3, type = "HC1", cluster = "group"))
+
+# Model without polyarchy_sd
+model2_nosd <- plm(y ~ polyarchy + gdp_cap + population + trade +
+                   number + political + social +
+                   colonial + hh_gdp + hh_poly + ideal_sd,
+                   data   = igo_analysis,
+                   index  = c("cow_igocode", "year"),
+                   model  = "within",
+                   effect = "time")
+
+coeftest(model2_nosd, vcov = vcovBK(model2_nosd, type="HC1", cluster="group"))
+
+
+
+
+
+detach("package:plyr", unload = TRUE)
+library(dplyr)
+library(plm)
+library(lmtest)
+library(clubSandwich)
+library(modelsummary)
+
+y <- igo_analysis$poolconstit
+
+# --- Block 1: Linear models (your original claim) ---
+# Tests simple monotonic negative relationship
+
+m1_linear <- plm(y ~ polyarchy_median + gdp_cap + population + trade +
+                 number + political + social + colonial + 
+                hh_gdp + hh_poly + ideal_sd,
+                 data = igo_analysis, index = c("cow_igocode", "year"),
+                 model = "within", effect = "time")
+
+m2_linear <- plm(y ~ polyarchy + gdp_cap + population + trade +
+                 number + political + social + colonial + 
+                  hh_gdp + hh_poly + ideal_sd,
+                 data = igo_analysis, index = c("cow_igocode", "year"),
+                 model = "within", effect = "time")
+
+m3_linear <- plm(y ~ percentage + gdp_cap + population + trade +
+                 number + political + social + colonial + 
+                   hh_gdp + hh_poly + ideal_sd,
+                 data = igo_analysis, index = c("cow_igocode", "year"),
+                 model = "within", effect = "time")
+
+   
+# --- Run all models ---
+vcov_bk <- function(x) vcovBK(x, type = "HC1", cluster = "group")
+
+# Linear block
+coeftest(m1_linear, vcov = vcov_bk(m1_linear))
+coeftest(m2_linear, vcov = vcov_bk(m2_linear))
+coeftest(m3_linear, vcov = vcov_bk(m3_linear))
+
+
+
+# --- Robustness: Between estimator ---
+# Pure cross-sectional identification — addresses sticky DV concern
+m_between <- plm(y ~ polyarchy + gdp_cap + population + trade +
+                 number + political + social + colonial + 
+                   hh_gdp + hh_poly + ideal_sd,
+                 data = igo_analysis, index = c("cow_igocode", "year"),
+                 model = "between")
+summary(m_between)
+
+# --- Robustness: Founding year cross-section ---
+founding <- igo_analysis %>%
+  dplyr::group_by(cow_igocode) %>%
+  dplyr::slice_min(year, n = 1, with_ties = FALSE) %>%
+  dplyr::ungroup()
+
+m_founding <- lm(poolconstit ~ polyarchy + gdp_cap + population + trade +
+                 number + political + social + colonial + 
+                   hh_gdp + hh_poly + ideal_sd,
+                 data = founding)
+coeftest(m_founding, vcov = vcovHC(m_founding, type = "HC1"))
 
 ```
 
-## Pooling 
-vcovHC creates heteroskedasticity-consistent errors
-```{r, eval=FALSE}
-model1 <-plm(y
-            ~ polyarchy_median+ gdp_cap + population + trade + globalization +
-              number + political + social
-            + economic + colonial + polyarchy_sd + hh_gdp + hh_poly + ideal_sd,
-            data = igo_analysis,
-             index = c("cow_igocode", "year"),  
-            model = "within",
-            effect = "time"
-)
-coeftest(model1, vcov=vcovBK(model1, type="HC1", cluster = "group"))
+# is AIGO more homogeneous?
+```{r}
+# --- Define AIGO vs DIGO based on mean polyarchy < 0.5 ---
+
+igo_analysis <- igo_analysis %>%
+  filter(is.na(polyarchy)==FALSE) %>%
+  dplyr::mutate(
+    aigo = ifelse(polyarchy < 0.5, 1, 0)
+  )
+
+# --- 1. Simple mean comparison ---
+igo_analysis %>%
+  dplyr::group_by(aigo) %>%
+  dplyr::summarise(
+    mean_sd   = mean(ideal_sd, na.rm = TRUE),
+    median_sd = median(ideal_sd, na.rm = TRUE),
+    n         = dplyr::n()
+  )
+
+# --- 2. T-test ---
+t.test(polyarchy_sd ~ aigo, data = igo_analysis)
+
+# --- 3. More rigorous: regression controlling for IGO size ---
+# Larger IGOs mechanically have higher SD — need to control for this
+homogeneity_model <- lm(ideal_sd ~ aigo + number + gdp_cap + 
+                        population + as.factor(year),
+                        data = igo_analysis)
+coeftest(homogeneity_model, 
+         vcov = vcovCL(homogeneity_model, cluster = ~cow_igocode))
+
+# --- 4. Visualize the distribution ---
+ggplot(igo_analysis, aes(x = ideal_sd, 
+                          fill = factor(aigo,
+                            labels = c("DIGO", "AIGO")))) +
+  geom_density(alpha = 0.5) +
+  scale_fill_manual(values = c("grey70", "grey30")) +
+  labs(x     = "Political Heterogeneity (SD of Polyarchy)",
+       y     = "Density",
+       fill  = "",
+       title = "Regime Homogeneity: AIGOs vs. DIGOs") +
+  theme_minimal() +
+  theme(text = element_text(family = "Times New Roman", size = 12))
+
+# --- 1. Correlation between mean polyarchy and SD ---
+cor.test(igo_analysis$polyarchy, igo_analysis$ideal_sd, 
+         use = "complete.obs")
+
+# --- 2. Regression: does higher polyarchy predict higher SD? ---
+# Controlling for IGO size since larger IGOs mechanically have more dispersion
+homogeneity_model <- lm(ideal_sd ~ polyarchy + number + 
+                        as.factor(year),
+                        data = igo_analysis)
+coeftest(homogeneity_model,
+         vcov = vcovCL(homogeneity_model, cluster = ~cow_igocode))
+
+# --- 3. Visualize ---
+ggplot(igo_analysis, aes(x = polyarchy, y = ideal_sd)) +
+  geom_point(alpha = 0.2, color = "grey50") +
+  geom_smooth(method = "lm", color = "black", se = TRUE) +
+  labs(x     = "Mean Polyarchy Score",
+       y     = "Political Heterogeneity (SD of Polyarchy)", title = "IGOs and Heterogeneity") +
+  theme_minimal() +
+  theme(text = element_text(family = "Times New Roman", size = 12))
 
 
-model2 <-plm(y
-            ~ polyarchy + gdp_cap + population + trade + globalization +
-              number + political + social 
-             + colonial + polyarchy_sd + hh_gdp + hh_poly + ideal_sd ,
-            index = c("cow_igocode", "year"),  
-            data = igo_analysis,
-            model = "within",
-            effect = "time"
-)
+
+m_interact <- plm(poolconstit ~ aigo * polyarchy_sd + 
+                  gdp_cap + population + trade +
+                  number + political + social + colonial +
+                  hh_gdp + hh_poly + ideal_sd,
+                  data   = igo_analysis,
+                  index  = c("cow_igocode", "year"),
+                  model  = "within",
+                  effect = "time")
+
+coeftest(m_interact, vcov = vcovBK(m_interact, type = "HC1", cluster = "group"))
 
 
-coeftest(model2, vcov=vcovBK(model2, type="HC1", cluster = c("group")))
 
+# --- Does the polyarchy effect differ across the distribution? ---
+# Split into thirds and check pooling means
 
-model3 <-plm(y
-            ~ percentage + gdp_cap + population + trade + globalization + number + political + social 
-             + colonial + polyarchy_sd + hh_gdp + hh_poly + ideal_sd ,
-            index = c("cow_igocode", "year"),  
-            data = igo_analysis,
-            model = "within",
-            effect = "time"
-)
+igo_analysis <- igo_analysis %>%
+  dplyr::mutate(
+    poly_tercile = dplyr::ntile(polyarchy, 3),
+    poly_group   = dplyr::case_when(
+      polyarchy < 0.33               ~ "AIGO (<0.33)",
+      polyarchy >= 0.33 & polyarchy < 0.66 ~ "Mixed (0.33-0.66)",
+      polyarchy >= 0.66              ~ "DIGO (>0.66)"
+    )
+  )
 
+# Mean pooling by group
+igo_analysis %>%
+  dplyr::group_by(poly_group) %>%
+  dplyr::summarise(
+    mean_pooling = mean(poolconstit, na.rm = TRUE),
+    mean_sd      = mean(polyarchy_sd, na.rm = TRUE),
+    n            = dplyr::n()
+  ) %>%
+  dplyr::arrange(mean_pooling)
 
-coeftest(model3, vcov=vcovBK(model3, type="HC1", cluster = c("group")))
-
-
+igo_dataset %>%
+  dplyr::filter(!is.na(ideal_mean), !is.na(polyarchy)) %>%
+  dplyr::mutate(igo_type = ifelse(polyarchy < 0.5, "AIGO", "DIGO")) %>%
+  ggplot(aes(x = polyarchy, y = ideal_mean, color = igo_type)) +
+  geom_point(alpha = 0.3, size = 1.5) +
+  geom_smooth(method = "lm", se = TRUE, 
+              aes(group = igo_type), color = "black") +
+  geom_vline(xintercept = 0.5, linetype = "dotted", color = "grey30") +
+  geom_hline(yintercept = 0,   linetype = "dashed", color = "grey30") +
+  scale_color_manual(values = c("AIGO" = "grey20", 
+                                 "DIGO" = "grey70")) +
+  annotate("text", x = 0.15, y = 3,
+           label = "AIGO", family = "Times New Roman", 
+           size = 4, fontface = "bold") +
+  annotate("text", x = 0.85, y = 3,
+           label = "DIGO", family = "Times New Roman", 
+           size = 4, fontface = "bold") +
+  annotate("text", x = 0.97, y = 0.15,
+           label = "US-aligned", family = "Times New Roman",
+           size = 3, color = "grey40") +
+  annotate("text", x = 0.97, y = -0.15,
+           label = "Non-aligned", family = "Times New Roman",
+           size = 3, color = "grey40") +
+  labs(x     = "Mean Polyarchy Score",
+       y     = "Mean Ideal Point (Bailey-Voeten)",
+       title = "AIGOs Hold More Illiberal Preferences in Multilateral Settings",
+       color = "") +
+  theme_minimal() +
+  theme(text          = element_text(family = "Times New Roman", size = 12),
+        legend.position = "none")
 ```
-## Delegation
-```{r, eval=FALSE}
 
-y2 <- igo_analysis$delconstit
-
-
-del0 <-plm(y2
-            ~ polyarchy,
-            data = igo_analysis,
-            index = c("year", "cow_igocode"),
-            model = "within",
-            effect = "time"
-)
-coeftest(del0, vcovBK(del0, type="HC1", cluster="group"))
-
-del1 <-plm(y2
-            ~ polyarchy_median+ gdp_cap + population + trade + globalization + alliances +
-              number + political + social
-             + colonial + polyarchy_sd + hh_gdp + hh_poly + ideal_sd,
-            data = igo_analysis,
-            index = c("year", "cow_igocode"),
-            model = "within",
-            effect = "time"
-)
-coeftest(del1, vcov=vcovBK(del1, type="HC1", cluster = "group"))
-
-del2 <-plm(y2
-            ~ polyarchy+ gdp_cap + population + trade + globalization + alliances +
-              number + political + social
-             + colonial + polyarchy_sd + hh_gdp + hh_poly + ideal_sd,
-            data = igo_analysis,
-            index = c("year", "cow_igocode"),
-            model = "within",
-            effect = "time"
-)
-coeftest(del2, vcov=vcovBK(del2, type="HC1", cluster = "group"))
-
-
-del3 <-plm(y2
-            ~ percentage+ gdp_cap + population + trade + globalization + alliances +
-              number + political + social
-             + colonial + polyarchy_sd + hh_gdp + hh_poly + ideal_sd,
-            data = igo_analysis,
-            index = c("year", "cow_igocode"),
-            model = "within",
-            effect = "time"
-)
-coeftest(del3, vcov=vcovBK(del3, type="HC1", cluster = c("group")))
-
-
-```
 
 # Results Visualization
 ```{r}
@@ -163,7 +403,7 @@ cm <- c('gdp_cap' = 'GDP Per Capita',
         'globalization' = 'Globalization', 
         'alliances' = 'Alliances',
         'colonial' = 'Colonial',
-        'number' = 'Number',
+        'numokay ber' = 'Number',
         'political' = 'Political',
         'social' = 'Social',
         'hh_gdp'= 'Economy HHI',
@@ -203,15 +443,5 @@ pooling_result <- modelplot(models, coef_omit = 'Interc', coef_map = cm) +
 
 
 ggsave("pooling_result.pdf", plot = pooling_result, width = 6, height = 4)
-
-#Delegation
-models2 <- list("Baseline"=del0, "Polyarchy Median"=del1, "Polyarchy Mean"=del2, "Percentage"=del3) 
-
-modelsummary(models2,  
-             stars=TRUE,coef_map=cm,
-          coef_omit = 'Interc')
-
-modelplot(models2, coef_omit = 'Interc', coef_map=cm) +
-    theme(text = element_text(family = "Times New Roman", size = 14))
 
 ```
