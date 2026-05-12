@@ -11,6 +11,7 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{caption}
+\usepackage{siunitx}
 \usepackage{float}
 \usepackage{microtype}
 \setlength{\parindent}{2em}
@@ -227,7 +228,7 @@ Using the panel data with the unit of analysis at IGO-year, I ran regression mod
 \begin{figure}[H]
 \centering
 % Replace with actual figure:
-\includegraphics[width=0.85\textwidth]{.png}
+\includegraphics[width=0.85\textwidth]{results/main_coef_plot.png}
 \label{fig:coef}
 \end{figure}
 
@@ -267,8 +268,11 @@ This paper addresses an important puzzle for both legal scholars and political s
 %------------------------------------------------------------
 \appendix
 \section{Coefficient Table}
-\input{table1_main.tex}
+\begin{table}[H]
+\centering
+\input{results/table1_main.tex}
+\end{table}
 
 \section{Robustness Checks}
-\input{tableA1_robustness.tex}
+\input{results/tableA1_robustness.tex}
 \end{document}
