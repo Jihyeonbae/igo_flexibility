@@ -1,0 +1,310 @@
+# Replication files for veto power
+
+# Setup and packages
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("pacman")
+p_load(plyr, dplyr, tidyr, ggplot2, tidyverse, RColorBrewer, readxl,
+       readr, haven, countrycode,
+       rqog, igoR, modelsummary, knitr, kableExtra, flextable, unvotes)
+
+igo_dataset <- read_rds("~/Desktop/igo_flexibility/igo_dataset_for_analysis.rds")
+```
+
+---
+```{r}
+dv <- igo_dataset$poolconstit
+
+cat("=== Summary Stats ===\n")
+summary(dv)
+
+cat("\n=== Proportion of exact zeros ===\n")
+mean(dv == 0, na.rm = TRUE)
+
+cat("\n=== Skewness ===\n")
+moments::skewness(dv, na.rm = TRUE)
+
+cat("\n=== Unique values ===\n")
+length(unique(na.omit(dv)))
+sort(unique(na.omit(dv)))
+
+cat("\n=== Zero vs nonzero breakdown ===\n")
+table(dv == 0, useNA = "ifany")
+
+cat("\n=== Within-IGO variation ===\n")
+igo_dataset %>%
+  filter(year >= 1960) %>%
+  arrange(cow_igocode, year) %>%
+  dplyr::group_by(cow_igocode) %>%
+  dplyr::summarise(
+    n_years   = n(),
+    n_changes = sum(poolconstit != lag(poolconstit), na.rm = TRUE),
+    sd_within = round(sd(poolconstit, na.rm = TRUE), 3),
+    .groups   = "drop"
+  ) %>%
+  dplyr::summarise(
+    total_igos        = n(),
+    igos_zero_changes = sum(n_changes == 0),
+    igos_any_changes  = sum(n_changes > 0),
+    pct_never_changed = round(mean(n_changes == 0) * 100, 1),
+    max_changes       = max(n_changes),
+    mean_sd_within    = round(mean(sd_within, na.rm = TRUE), 3)
+  )
+```
+
+# Data Analysis for main paper
+```{r}
+igo_dataset %>%
+  dplyr::filter(year >= 1960) %>%
+  dplyr::arrange(cow_igocode, year) %>%
+  dplyr::group_by(cow_igocode) %>%
+  dplyr::summarise(
+    ioname      = dplyr::first(na.omit(ioname)),
+    n_years     = dplyr::n(),
+    n_changes   = dplyr::n_distinct(poolconstit, na.rm = TRUE) - 1,
+    first_value = dplyr::first(na.omit(poolconstit)),
+    last_value  = dplyr::last(na.omit(poolconstit)),
+    sd_within   = round(sd(poolconstit, na.rm = TRUE), 3),
+    .groups     = "drop"
+  ) %>%
+  dplyr::arrange(desc(n_changes)) %>%
+  print(n = Inf)
+
+```
+
+
+```{r}
+library(lmtest)
+library(plm)
+
+igo_analysis <- igo_dataset[igo_dataset$year>=1960,]
+y <- igo_analysis$poolconstit
+
+model0 <-plm(y
+            ~ polyarchy,
+            data = igo_analysis,
+            index = c("cow_igocode", "year"),
+            model = "within",
+            effect = "time"
+)
+
+model0$vcov<-plm::vcovHC(model0, type="HC1", cluster="group")
+
+model1 <-plm(poolconstit ~ polyarchy  + number + 
+                  political + social + hh_gdp +
+                  gdp_cap  + trade + globalization + alliances +
+                  polyarchy_sd + ideal_sd,
+            data = igo_analysis,
+            index = c("cow_igocode", "year"),
+            model = "within",
+            effect = "time"
+)
+coeftest(model1, vcov=vcovHC(model1, type="HC1", cluster = "group"))
+model1$vcov<-plm::vcovHC(model1, type="HC1", cluster = "group")
+
+```
+
+# robustness check
+
+```{r}
+r_model1 <- plm(poolconstit
+            ~ libdem + gdp_cap  + trade + globalization + alliances +
+              number + political + social 
+              + polyarchy_sd + hh_gdp  + ideal_sd ,
+            index = c("cow_igocode", "year"),
+            data = igo_analysis,
+            model = "within",
+            effect = "time"
+)
+
+coeftest(r_model1, vcov=vcovHC(r_model1, type="HC1", cluster = c("group")))
+r_model1$vcov<-plm::vcovHC(r_model1, type="HC1", cluster = "group")
+
+
+r_model2 <-plm(poolconstit
+            ~ polyarchy + gdp_cap  + trade + globalization + alliances +
+              number + political + social 
+              + polyarchy_sd + hh_gdp  + ideal_sd ,
+            index = c("cow_igocode", "year"),
+            data = igo_analysis,
+            model = "within",
+            effect = "time"
+)
+
+coeftest(r_model2, vcov=vcovHC(r_model2, type="HC1", cluster = c("group")))
+r_model2$vcov<-plm::vcovHC(r_model2, type="HC1", cluster = "group")
+
+
+r_model3 <-plm(poolconstit
+            ~ percentage + gdp_cap  + trade + globalization + alliances +
+              number + political + social 
+              + polyarchy_sd + hh_gdp  + ideal_sd ,
+            index = c("cow_igocode", "year"),
+            data = igo_analysis,
+            model = "within",
+            effect = "time"
+)
+
+
+coeftest(r_model3, vcov=vcovHC(r_model3, type="HC1", cluster = c("group")))
+r_model3$vcov<-plm::vcovHC(r_model3, type="HC1", cluster = "group")
+
+```
+
+
+
+# Results Visualization
+```{r results-output}
+library(modelsummary)
+library(ggplot2)
+library(officer)
+library(flextable)
+
+# ── Coefficient map ───────────────────────────────────────────────────────────
+cm <- c(
+  'polyarchy'        = 'Polyarchy (Mean)',
+  'percentage'       = 'Percentage of Democracy',
+  'libdem'           = 'Liberal Democracy',
+  'gdp_cap'          = 'GDP Per Capita',
+  'trade'            = 'Trade',
+  'globalization'    = 'Globalization',
+  'alliances'        = 'Alliances',
+  'number'           = 'Number',
+  'political'        = 'Political',
+  'social'           = 'Social',
+  'hh_gdp'           = 'Economy HHI',
+  'ideal_sd'         = 'Preference Heterogeneity',
+  'polyarchy_sd'     = 'Political Heterogeneity'
+)
+
+# ── Model lists ───────────────────────────────────────────────────────────────
+main_models <- list(
+  "Baseline" = model0,
+  "Main"     = model1
+)
+
+rob_models <- list(
+  "LibDem"     = r_model1,
+  "Polyarchy"  = r_model2,
+  "Percentage" = r_model3
+)
+
+main_vcovs <- list(model0$vcov, model1$vcov)
+rob_vcovs  <- list(r_model1$vcov, r_model2$vcov, r_model3$vcov)
+
+# ── 1. COEFFICIENT PLOT ───────────────────────────────────────────────────────
+p <- modelplot(
+  main_models,
+  vcov      = main_vcovs,
+  coef_map  = cm,
+  coef_omit = "Intercept"
+) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+  theme_bw() +
+  theme(
+    text        = element_text(family = "Times New Roman", size = 13),
+    legend.position = "bottom"
+  ) +
+  labs(
+    x       = "Coefficient Estimate (95% CI)",
+    y       = NULL,
+    caption = "Year fixed effects. Cluster-robust SEs at IGO level."
+  )
+
+print(p)
+
+ggsave(
+  "~/Desktop/igo_flexibility/results/main_coef_plot.png",
+  plot   = p,
+  width  = 7,
+  height = 6,
+  device = "png",
+  dpi    = 300
+)
+
+# ── 2. MAIN TABLE → .docx ────────────────────────────────────────────────────
+# Step 2: write to .tex for Overleaf
+modelsummary(
+  main_models,
+  vcov      = main_vcovs,
+  stars     = TRUE,
+  coef_map  = cm,
+  coef_omit = "Intercept",
+  gof_map   = c("nobs", "r.squared", "adj.r.squared"),
+  title     = "Constitutional Pooling and IGO Regime Composition",
+  notes     = "Year fixed effects. Cluster-robust SEs at IGO level.",
+  output    = "~/Desktop/igo_flexibility/results/table1_main.tex"
+)
+
+# ── 3. ROBUSTNESS TABLE → .tex for Overleaf ──────────────────────────────────
+modelsummary(
+  rob_models,
+  vcov      = rob_vcovs,
+  stars     = TRUE,
+  coef_map  = cm,
+  coef_omit = "Intercept",
+  gof_map   = c("nobs", "r.squared", "adj.r.squared"),
+  title     = "Robustness: Alternative Democracy Measures",
+  notes     = "Year fixed effects. Cluster-robust SEs at IGO level. M1 = Liberal Democracy, M2 = Polyarchy Mean, M3 = Percentage Democratic.",
+  output    = "~/Desktop/igo_flexibility/results/tableA1_robustness.tex"
+)
+cat("Table A1 saved as tableA1_robustness.tex\n")
+```
+
+
+
+```{r}
+library(mediation)
+
+
+
+# ── MEDIATION : Through legislative competitiveness ─────────────────────────
+med_model_leg <- lm(
+  legislative_competitiveness ~ polyarchy + colonial + number + 
+    gdp_cap + population + trade + globalization + 
+    alliances + polyarchy_sd,
+  data = igo_analysis
+)
+
+out_model_leg <- lm(
+  poolconstit ~ polyarchy + legislative_competitiveness + 
+    colonial + number + hh_gdp + gdp_cap + population + 
+    trade + globalization + alliances + polyarchy_sd + ideal_sd,
+  data = igo_analysis
+)
+
+med_result_leg <- mediate(
+  med_model_leg, out_model_leg,
+  treat    = "polyarchy",
+  mediator = "legislative_competitiveness",
+  robustSE = TRUE,
+  sims     = 1000
+)
+summary(med_result_leg)
+
+# ── MEDIATION 3: Through executive competitiveness ───────────────────────────
+med_model_exec <- lm(
+  executive_competitiveness ~ polyarchy + colonial + number + 
+    gdp_cap + population + trade + globalization + 
+    alliances + polyarchy_sd,
+  data = igo_analysis
+)
+
+out_model_exec <- lm(
+  poolconstit ~ polyarchy + executive_competitiveness + 
+    colonial + number + hh_gdp + gdp_cap + population + 
+    trade + globalization + alliances + polyarchy_sd + ideal_sd,
+  data = igo_analysis
+)
+
+med_result_exec <- mediate(
+  med_model_exec, out_model_exec,
+  treat    = "polyarchy",
+  mediator = "executive_competitiveness",
+  robustSE = TRUE,
+  sims     = 1000
+)
+summary(med_result_exec)
+```
+
