@@ -227,9 +227,7 @@ Using the panel data with the unit of analysis at IGO-year, I ran regression mod
 \begin{figure}[H]
 \centering
 % Replace with actual figure:
-% \includegraphics[width=0.8\textwidth]{figure2.png}
-\fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}[Figure 2: Coefficient Estimates]\vspace{2cm}}}
-\caption{Coefficient estimates from a linear model examining the relationship between the average polyarchy score of an IGO's member states and the degree of pooling in constitutional amendment procedures.}
+\includegraphics[width=0.85\textwidth]{.png}
 \label{fig:coef}
 \end{figure}
 
@@ -269,55 +267,8 @@ This paper addresses an important puzzle for both legal scholars and political s
 %------------------------------------------------------------
 \appendix
 \section{Coefficient Table}
+\input{table1_main.tex}
 
-\begin{table}[H]
-\centering
-\caption{Regression Results: Constitutional Pooling and Regime Type}
-\label{tab:regression}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{lccc}
-\toprule
- & \textbf{Polyarchy Median} & \textbf{Polyarchy Mean} & \textbf{Percentage} \\
-\midrule
-polyarchy\_median & $-0.231^{***}$ & & \\
- & $(0.058)$ & & \\
-polyarchy & & $-0.452^{***}$ & \\
- & & $(0.097)$ & \\
-percentage & & & $-0.145^{*}$ \\
- & & & $(0.058)$ \\
-gdp\_cap & $-0.045$ & $-0.050^{+}$ & $-0.043$ \\
- & $(0.028)$ & $(0.028)$ & $(0.028)$ \\
-population & $-0.063^{**}$ & $-0.063^{**}$ & $-0.051^{*}$ \\
- & $(0.022)$ & $(0.022)$ & $(0.022)$ \\
-trade & $0.132^{***}$ & $0.141^{***}$ & $0.128^{***}$ \\
- & $(0.036)$ & $(0.036)$ & $(0.036)$ \\
-globalization & $0.006^{***}$ & $0.008^{***}$ & $0.005^{**}$ \\
- & $(0.002)$ & $(0.002)$ & $(0.002)$ \\
-alliances & $0.000$ & $-0.001$ & $0.002$ \\
- & $(0.004)$ & $(0.004)$ & $(0.004)$ \\
-number & $0.000$ & $0.000$ & $0.000$ \\
- & $(0.000)$ & $(0.000)$ & $(0.000)$ \\
-colonial & $-0.370^{**}$ & $-0.369^{***}$ & $-0.286^{**}$ \\
- & $(0.113)$ & $(0.112)$ & $(0.110)$ \\
-polyarchy\_sd & $-0.053$ & $-0.218^{+}$ & $-0.111$ \\
- & $(0.126)$ & $(0.132)$ & $(0.130)$ \\
-hh\_gdp & $0.124$ & $0.097$ & $0.102$ \\
- & $(0.094)$ & $(0.094)$ & $(0.094)$ \\
-hh\_poly & $-0.346$ & $-0.280$ & $-0.156$ \\
- & $(0.248)$ & $(0.242)$ & $(0.241)$ \\
-ideal\_sd & $0.035$ & $0.023$ & $0.020$ \\
- & $(0.032)$ & $(0.032)$ & $(0.032)$ \\
-\midrule
-Num.\ Obs. & 2680 & 2680 & 2680 \\
-R$^2$ & 0.037 & 0.040 & 0.034 \\
-R$^2$ Adj. & 0.007 & 0.009 & 0.003 \\
-AIC & $-1306.7$ & $-1312.9$ & $-1297.2$ \\
-BIC & $-1230.1$ & $-1236.3$ & $-1220.6$ \\
-RMSE & 0.19 & 0.19 & 0.19 \\
-\bottomrule
-\multicolumn{4}{l}{$^{+}$ $p < 0.1$, $^{*}$ $p < 0.05$, $^{**}$ $p < 0.01$, $^{***}$ $p < 0.001$}
-\end{tabular}%
-}
-\end{table}
-
+\section{Robustness Checks}
+\input{tableA1_robustness.tex}
 \end{document}
