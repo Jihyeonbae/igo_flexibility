@@ -1,0 +1,48 @@
+\begin{table}
+\centering
+\begin{talltblr}[         %% tabularray outer open
+caption={Robustness: Alternative Democracy Measures},
+note{}={+ p \num{< 0.1}, * p \num{< 0.05}, ** p \num{< 0.01}, *** p \num{< 0.001}},
+note{ }={Year fixed effects. Cluster-robust SEs at IGO level. M1 = Liberal Democracy, M2 = Polyarchy Mean, M3 = Percentage Democratic.},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]},
+hline{2}={1-4}{solid, black, 0.05em},
+hline{28}={1-4}{solid, black, 0.05em},
+hline{1}={1-4}{solid, black, 0.1em},
+hline{31}={1-4}{solid, black, 0.1em},
+column{2-4}={}{halign=c},
+column{1}={}{halign=l},
+}                     %% tabularray inner close
+& LibDem & Polyarchy & Percentage \\
+Polyarchy (Mean) &  & \num{-0.312}* &  \\
+&  & (\num{0.148}) &  \\
+Percentage of Democracy &  &  & \num{-0.174}* \\
+&  &  & (\num{0.087}) \\
+Liberal Democracy & \num{-0.332}* &  &  \\
+& (\num{0.167}) &  &  \\
+GDP Per Capita & \num{0.042} & \num{0.034} & \num{0.036} \\
+& (\num{0.032}) & (\num{0.029}) & (\num{0.030}) \\
+Trade & \num{0.065} & \num{0.060} & \num{0.046} \\
+& (\num{0.058}) & (\num{0.058}) & (\num{0.061}) \\
+Globalization & \num{0.001} & \num{0.002} & \num{0.001} \\
+& (\num{0.001}) & (\num{0.001}) & (\num{0.001}) \\
+Alliances & \num{-0.008}* & \num{-0.008}* & \num{-0.007}* \\
+& (\num{0.003}) & (\num{0.003}) & (\num{0.003}) \\
+Number & \num{0.001}* & \num{0.001}* & \num{0.001}* \\
+& (\num{0.000}) & (\num{0.000}) & (\num{0.000}) \\
+Political & \num{0.014} & \num{0.015} & \num{0.013} \\
+& (\num{0.051}) & (\num{0.050}) & (\num{0.049}) \\
+Social & \num{-0.007} & \num{-0.008} & \num{-0.009} \\
+& (\num{0.057}) & (\num{0.057}) & (\num{0.057}) \\
+Economy HHI & \num{0.610}** & \num{0.588}* & \num{0.590}* \\
+& (\num{0.228}) & (\num{0.230}) & (\num{0.237}) \\
+Preference Heterogeneity & \num{-0.021} & \num{-0.023} & \num{-0.040} \\
+& (\num{0.065}) & (\num{0.065}) & (\num{0.071}) \\
+Political Heterogeneity & \num{0.160} & \num{0.196} & \num{0.254} \\
+& (\num{0.240}) & (\num{0.249}) & (\num{0.273}) \\
+Num.Obs. & \num{2678} & \num{2678} & \num{2678} \\
+R2 & \num{0.267} & \num{0.270} & \num{0.266} \\
+R2 Adj. & \num{0.252} & \num{0.255} & \num{0.250} \\
+\end{talltblr}
+\end{table}
