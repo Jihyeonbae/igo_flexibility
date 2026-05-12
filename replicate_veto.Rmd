@@ -234,7 +234,11 @@ modelsummary(
   gof_map   = c("nobs", "r.squared", "adj.r.squared"),
   title     = "Constitutional Pooling and IGO Regime Composition",
   notes     = "Year fixed effects. Cluster-robust SEs at IGO level.",
-  output    = "~/Desktop/igo_flexibility/results/table1_main.tex"
+  output    = "~/Desktop/igo_flexibility/results/table1_main.tex",
+  booktabs  = TRUE,
+  escape    = FALSE,
+  float     = FALSE  
+  
 )
 
 # ── 3. ROBUSTNESS TABLE → .tex for Overleaf ──────────────────────────────────
@@ -246,10 +250,12 @@ modelsummary(
   coef_omit = "Intercept",
   gof_map   = c("nobs", "r.squared", "adj.r.squared"),
   title     = "Robustness: Alternative Democracy Measures",
-  notes     = "Year fixed effects. Cluster-robust SEs at IGO level. M1 = Liberal Democracy, M2 = Polyarchy Mean, M3 = Percentage Democratic.",
-  output    = "~/Desktop/igo_flexibility/results/tableA1_robustness.tex"
+  notes     = "Year fixed effects. Cluster-robust SEs at IGO level.",
+  output    = "~/Desktop/igo_flexibility/results/tableA1_robustness.tex",
+  booktabs  = TRUE,
+  escape    = FALSE,
+  float     = FALSE       # ← this is the key fix
 )
-cat("Table A1 saved as tableA1_robustness.tex\n")
 ```
 
 
