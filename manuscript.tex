@@ -10,6 +10,9 @@
 \usepackage{tabularx}
 \usepackage{graphicx}
 \usepackage{hyperref}
+\usepackage{tabularray}
+\UseTblrLibrary{booktabs}
+\UseTblrLibrary{siunitx}
 \usepackage{caption}
 \usepackage{siunitx}
 \usepackage{float}
@@ -270,9 +273,14 @@ This paper addresses an important puzzle for both legal scholars and political s
 \section{Coefficient Table}
 \begin{table}[H]
 \centering
+\label{app:coef_table_main}
 \input{results/table1_main.tex}
 \end{table}
 
 \section{Robustness Checks}
-\input{results/tableA1_robustness.tex}
+\begin{table}[H]
+\centering
+\label{app:alterantive_rob}
+\input{results/tableA1_robustness}
+\end{table}d
 \end{document}
