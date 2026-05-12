@@ -224,7 +224,7 @@ ggsave(
 )
 
 # ── 2. MAIN TABLE → .docx ────────────────────────────────────────────────────
-# Step 2: write to .tex for Overleaf
+# Generate as text first, then write to file
 modelsummary(
   main_models,
   vcov      = main_vcovs,
@@ -237,8 +237,8 @@ modelsummary(
   output    = "~/Desktop/igo_flexibility/results/table1_main.tex",
   booktabs  = TRUE,
   escape    = FALSE,
-  float     = FALSE  
-  
+  float     = FALSE,
+  output    = "latex"   # forces classic tabular
 )
 
 # ── 3. ROBUSTNESS TABLE → .tex for Overleaf ──────────────────────────────────
