@@ -123,7 +123,7 @@ r_model1$vcov<-plm::vcovHC(r_model1, type="HC1", cluster = "group")
 
 
 r_model2 <-plm(poolconstit
-            ~ polyarchy + gdp_cap  + trade + globalization + alliances +
+            ~ polyarchy_median + gdp_cap  + trade + globalization + alliances +
               number + political + social 
               + polyarchy_sd + hh_gdp  + ideal_sd ,
             index = c("cow_igocode", "year"),
