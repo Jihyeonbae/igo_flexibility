@@ -11,34 +11,12 @@ tobit_main <- tobit(
 )
 summary(tobit_main)
 
-# Alternative operationalizations
-tobit_pct <- tobit(
-  poolconstit ~ percentage + gdp_cap + trade + globalization +
-    alliances + number + political + social +
-    hh_gdp + polyarchy_sd + ideal_sd,
-  data  = igo_analysis,
-  left  = 0,
-  right = 1
-)
-summary(tobit_pct)
-
-tobit_lib <- tobit(
-  poolconstit ~ libdem + gdp_cap + trade + globalization +
-    alliances + number + political + social +
-    hh_gdp + polyarchy_sd + ideal_sd,
-  data  = igo_analysis,
-  left  = 0,
-  right = 1
-)
-summary(tobit_lib)
 
 # Add Tobit to robustness output
 library(AER)
 
 tobit_models <- list(
-  "Polyarchy"  = tobit_main,
-  "Percentage" = tobit_pct,
-  "LibDem"     = tobit_lib
+  "Polyarchy"  = tobit_main
 )
 
 modelsummary(
