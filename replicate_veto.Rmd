@@ -175,7 +175,8 @@ cm <- c(
   'social'           = 'Social',
   'hh_gdp'           = 'Economy HHI',
   'ideal_sd'         = 'Preference Heterogeneity',
-  'polyarchy_sd'     = 'Political Heterogeneity'
+  'polyarchy_sd'     = 'Political Heterogeneity',
+  'polyarchy_median' = 'Polyarchy (Median)'
 )
 
 # ── Model lists ───────────────────────────────────────────────────────────────
