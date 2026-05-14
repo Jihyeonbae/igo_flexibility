@@ -204,23 +204,28 @@ If members' economic disparity is large within one IGO, members will want to res
 
 \subsubsection{Estimation Strategies}
 
-To test whether there is a negative correlation between the level of democracy within an IGO and the degree of pooling on constitutional reform decisions, I use linear panel models with the unit of analysis at the IGO-year level. All models include year fixed effects to account for time-specific shocks that could affect institutional design. Standard errors are clustered at the IGO level to adjust for within-group heteroskedasticity, which is especially important given the unbalanced panel structure and variation in organizational size \parencite{pustejovsky_clubsandwich_2017}.
+To test whether there is a negative correlation between the level of democracy within an IGO and the degree of pooling on constitutional reform decisions, I use linear panel models with the unit of analysis at the IGO-year level. All models include year fixed effects to account for time-specific shocks that could affect institutional design across all IGOs simultaneously. Standard errors are clustered at the IGO level to adjust for within-group heteroskedasticity, which is especially important given the unbalanced panel structure and variation in organizational size \parencite{pustejovsky_clubsandwich_2017}.
 
 
-The panel structure is retained for two reasons. First, it accommodates variation in membership composition over time. Many IGOs evolve after their founding through new countries' accession, democratization of existing members, or exit, which shifts the average regime type of the organization without a formal rule change. Second, year fixed effects absorb global time trends that may confound the cross-sectional relationship between regime composition and institutional design. It bears noting, however, that constitutional pooling rules are largely stable within IGOs over the observation period, consistent with the institutional stickiness characteristic of founding documents. As a result, identification rests primarily on cross-sectional variation across IGOs rather than within-IGO changes over time. To confirm that the main finding is not an artifact of the linear model's assumptions, I supplement the panel estimates with Tobit models that account for the bounded distribution of the dependent variable, and replicate the analysis across three alternative operationalizations of IGO-level democracy. Results are consistent across all specifications.
+Identification rests primarily on cross-sectional variation across IGOs rather than within-IGO change over time. Constitutional pooling rules are highly stable within IGOs over the observation period — 61 of 75 IGOs never alter their amendment procedures (see Table~\ref{tab:stability} in the appendix). Identification therefore rests primarily on cross-sectional variation across IGOs rather than within-IGO change over time. The panel structure serves two purposes: it allows year fixed effects to absorb global time trends that could confound the cross-sectional relationship, and it accommodates gradual shifts in membership composition as countries join, exit, or experience regime transitions. The latter is theoretically important because the regime composition of an IGO is not fixed at founding — it evolves as membership changes — and the panel structure allows this variation to be incorporated into the estimation of the main relationship. The core estimand, however, is the cross-sectional association between authoritarian membership composition and amendment flexibility, and results should be interpreted accordingly.
+
+The main estimates rely on a linear panel model, which treats the constitutional pooling score as a continuous outcome distributed uniformly across its range. Two features of the dependent variable merit attention. First, the distribution is left-skewed and bounded at zero, raising the possibility that OLS underestimates the true relationship by treating observed zeros as ordinary low values rather than censored outcomes. Second, zeros may reflect a qualitatively distinct state — IGOs that have adopted no amendment flexibility whatsoever — rather than simply a low value on a continuum, in which case pooling the zeros with positive observations in a single linear model could obscure heterogeneity in the data-generating process.
+
+
+To address both concerns, I estimate two alternative models reported in the appendix. First, a Tobit model with left-censoring at zero and right-censoring at one treats observed zeros as censored realizations of a latent flexibility score that may extend below the observable boundary, directly addressing the first concern. Second, a hurdle model separates the decision to adopt any amendment flexibility at all from the decision about how much flexibility to adopt conditional on having some, directly addressing the second concern. Across both models, the negative relationship between authoritarian IGO composition and constitutional pooling holds at conventional levels of statistical significance, and the estimated effects are somewhat larger in magnitude than the OLS estimates. This is consistent with the expectation that linear regression produces conservative estimates when the outcome is censored or structurally heterogeneous. The linear model is nonetheless retained as the main specification for two reasons: it is directly comparable to existing empirical work on IGO institutional design, and its coefficients are more straightforwardly interpretable in substantive terms. The robustness checks confirm that the main finding is not an artifact of these modeling assumptions.
 
 \begin{figure}[H]
 \centering
 % Replace with actual figure:
-% \includegraphics[width=\textwidth]{figure1.png}
-\fbox{\parbox{0.9\textwidth}{\centering\vspace{2cm}[Figure 1: Variation in Amendment Flexibility Across Time and IGOs]\vspace{2cm}}}
+\includegraphics[width=\textwidth]{results/figure1_variation.png}
+
 \caption{Variation in Amendment Flexibility Across Time and IGOs. Panel (a) plots the yearly average values of the constitutional pooling score from 1950 to 2020. Panel (b) shows cross-organizational variation in constitutional pooling, with notable heterogeneity in mean levels.}
 \label{fig:variation}
 \end{figure}
 
 Figure~\ref{fig:variation} displays the variation in the constitutional pooling index across time and across IGOs. The left panel plots the yearly average values of constitutional pooling score, showing clear temporal variation. This indicates that IGOs' amendment flexibility is not static over time, supporting the use of a panel structure. The right panel demonstrates variation in constitutional pooling across individual IGOs, with notable heterogeneity in mean levels. Taken together, these figures provide empirical justification for panel modeling: the dependent variable varies both across time and across units, making a cross-sectional analysis (e.g., at the time of inception only) limited for capturing these dynamics.
 
-Panel (a) shows that while the average pooling score remains relatively stable around 0.2 from 1950 to 2020, there is greater uncertainty in earlier years, as indicated by wider confidence intervals. Panel (b) reveals substantial cross-organizational variation. A few IGOs such as WIPO and the UN exhibit high pooling scores above 0.6, suggesting more flexible amendment procedures, while the majority cluster at much lower scores, with several IGOs, including Mercosur, ILO, and PCA, displaying low flexibility. This descriptive evidence highlights that amendment rules differ markedly across IGOs, and to a lesser extent over time.
+Panel (a) shows that while the average pooling score remains relatively stable around 0.2 from 1950 to 2020, there is greater uncertainty in earlier years, as indicated by wider confidence intervals. Panel (b) reveals substantial cross-organizational variation. A few IGOs such as WIPO and the UN exhibit high pooling scores above 0.6, suggesting more flexible amendment procedures, while the majority cluster at much lower scores, with several IGOs, including Mercosur, ILO, and PCA, displaying low flexibility. This descriptive evidence highlights that amendment rules differ markedly across IGOs, while remaining largely stable within IGOs over time, consistent with the institutional stickiness of founding constitutional documents.
 
 \section{Empirical Results and Discussion}
 
@@ -257,6 +262,14 @@ Third, this paper underscores the importance of moving beyond aggregate measures
 % APPENDIX
 %------------------------------------------------------------
 \appendix
+
+\section{Descriptive Table}
+\begin{table}[H]
+\centering
+\label{app:stability}
+\input{results/tableA3_stability}
+\end{table}
+
 \section{Coefficient Table}
 \begin{table}[H]
 \centering
