@@ -1,44 +1,44 @@
-\begin{table}
 \centering
 \begin{talltblr}[         %% tabularray outer open
-entry=none,label=none,
-note{}={+ p < 0.1, * p < 0.05, ** p < 0.01, *** p < 0.001},
+caption={Constitutional Pooling and IGO Regime Composition},
+label={app:coef_table_main},
+note{}={+ p \num{< 0.1}, * p \num{< 0.05}, ** p \num{< 0.01}, *** p \num{< 0.001}},
 note{ }={Year fixed effects. Cluster-robust SEs at IGO level.},
 ]                     %% tabularray outer close
 {                     %% tabularray inner open
 colspec={Q[]Q[]Q[]},
-column{1}={halign=l,},
-column{2}={halign=c,},
-column{3}={halign=c,},
-hline{24}={1,2,3}{solid, 0.05em, black},
+hline{2}={1-3}{solid, black, 0.05em},
+hline{24}={1-3}{solid, black, 0.05em},
+hline{1}={1-3}{solid, black, 0.1em},
+hline{27}={1-3}{solid, black, 0.1em},
+column{2-3}={}{halign=c},
+column{1}={}{halign=l},
 }                     %% tabularray inner close
-\toprule
-& Baseline & Main \\ \midrule %% TinyTableHeader
-Polyarchy (Mean)         & \num{-0.249}* & \num{-0.312}* \\
-& (\num{0.101}) & (\num{0.148}) \\
-GDP Per Capita           &                & \num{0.034}   \\
-&                & (\num{0.029}) \\
-Trade                    &                & \num{0.060}   \\
-&                & (\num{0.058}) \\
-Globalization            &                & \num{0.002}   \\
-&                & (\num{0.001}) \\
-Alliances                &                & \num{-0.008}* \\
-&                & (\num{0.003}) \\
-Number                   &                & \num{0.001}*  \\
-&                & (\num{0.000}) \\
-Political                &                & \num{0.015}   \\
-&                & (\num{0.050}) \\
-Social                   &                & \num{-0.008}  \\
-&                & (\num{0.057}) \\
-Economy HHI              &                & \num{0.588}*  \\
-&                & (\num{0.230}) \\
-Preference Heterogeneity &                & \num{-0.023}  \\
-&                & (\num{0.065}) \\
-Political Heterogeneity  &                & \num{0.196}   \\
-&                & (\num{0.249}) \\
-Num.Obs.                 & \num{3033}    & \num{2678}    \\
-R2                       & \num{0.067}   & \num{0.270}   \\
-R2 Adj.                  & \num{0.050}   & \num{0.255}   \\
-\bottomrule
+
+& Baseline & Main \\
+Polyarchy (Mean) & \num{-0.249}* & \num{-0.312}*** \\
+& (\num{0.101}) & (\num{0.027}) \\
+GDP Per Capita &  & \num{0.034}*** \\
+&  & (\num{0.006}) \\
+Trade &  & \num{0.060}*** \\
+&  & (\num{0.018}) \\
+Globalization &  & \num{0.002}*** \\
+&  & (\num{0.000}) \\
+Alliances &  & \num{-0.008}*** \\
+&  & (\num{0.002}) \\
+Number &  & \num{0.001}*** \\
+&  & (\num{0.000}) \\
+Political &  & \num{0.015}+ \\
+&  & (\num{0.008}) \\
+Social &  & \num{-0.008} \\
+&  & (\num{0.009}) \\
+Economy HHI &  & \num{0.588}*** \\
+&  & (\num{0.062}) \\
+Preference Heterogeneity &  & \num{-0.023} \\
+&  & (\num{0.017}) \\
+Political Heterogeneity &  & \num{0.196}** \\
+&  & (\num{0.071}) \\
+Num.Obs. & \num{3033} & \num{2678} \\
+R2 & \num{0.067} & \num{0.270} \\
+R2 Adj. & \num{0.050} & \num{0.255} \\
 \end{talltblr}
-\end{table}

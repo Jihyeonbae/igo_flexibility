@@ -40,7 +40,7 @@
 \maketitle
 
 \begin{abstract}
-Conventional wisdom holds that authoritarian regimes resist institutional flexibility in international organizations, favoring unanimity rules to preserve veto power. This article challenges that assumption by theorizing the conditions under which autocracies prefer majoritarian amendment rules. I argue that when embedded in intergovernmental organizations (IGOs) composed largely of fellow autocracies, authoritarian states are more willing to forgo veto power than democracies. Shared regime interests, particularly around sovereignty, non-interference, and political stability, reduce both the ideological distance among members and the domestic political costs of implementing unwanted amendments. Using a dataset of more than 150 IGOs from 1960 to 2019, I find that clubs of autocracies are significantly more likely to adopt majority-rule amendment procedures, instead of unanimity, than their democratic counterparts.
+Conventional wisdom holds that authoritarian regimes resist institutional flexibility in international organizations, favoring unanimity rules to preserve veto power. This article challenges that assumption by theorizing the conditions under which autocracies prefer majoritarian amendment rules. I argue that when embedded in intergovernmental organizations (IGOs) composed largely of fellow autocracies, authoritarian states are more willing to forgo veto power than democracies. Shared regime interests, particularly around sovereignty, non-interference, and political stability, reduce both the ideological distance among members and the domestic political costs of implementing unwanted amendments. Using a dataset of more than 150 IGOs from 1950 to 2014, I find that clubs of autocracies are significantly more likely to adopt majority-rule amendment procedures, instead of unanimity, than their democratic counterparts.
 
 \medskip
 \noindent\textbf{Key words:} Intergovernmental Organizations, International Law, Rational Design of Institutions, Voting Rules, Authoritarianism
@@ -125,7 +125,7 @@ In sum, authoritarian states are better positioned to adopt majority decision ru
 
 \section{Data and Methods}
 
-The following sections provide empirical strategies to test the theoretical expectation outlined above. I use panel data of 73 IGOs from 1960 to 2019 traced by the ``Measuring International Authority (MIA)'' \parencite{hooghe_constructing_2017}. This time scope well captures the landscape of international governance at the beginning of the second democratization wave and in a less ideology-driven setting.
+The following sections provide empirical strategies to test the theoretical expectation outlined above. I use panel data of 76 IGOs from 1950 to 2014 traced by the ``Measuring International Authority (MIA)'' \parencite{hooghe_constructing_2017}. This time scope well captures the landscape of international governance at the beginning of the second democratization wave and in a less ideology-driven setting.
 
 To measure member states' regime type, I use the polyarchy index from the Varieties of Democracy (V-Dem) project \parencite{vdem_codebook_2023}, which provides a continuous 0--1 scale capturing electoral competitiveness and participation. Compared to binary democracy measures, polyarchy allows for finer-grained comparisons across countries and over time, making it particularly well suited to assessing the composition of IGO membership.
 
@@ -206,13 +206,19 @@ If members' economic disparity is large within one IGO, members will want to res
 
 To test whether there is a negative correlation between the level of democracy within an IGO and the degree of pooling on constitutional reform decisions, I use linear panel models with the unit of analysis at the IGO-year level. All models include year fixed effects to account for time-specific shocks that could affect institutional design across all IGOs simultaneously. Standard errors are clustered at the IGO level to adjust for within-group heteroskedasticity, which is especially important given the unbalanced panel structure and variation in organizational size \parencite{pustejovsky_clubsandwich_2017}.
 
+\begin{table}[H]
+\centering
+\label{app:stability}
+\input{results/tableA3_stability}
+\end{table}
 
-Identification rests primarily on cross-sectional variation across IGOs rather than within-IGO change over time. Constitutional pooling rules are highly stable within IGOs over the observation period — 61 of 75 IGOs never alter their amendment procedures (see Table~\ref{tab:stability} in the appendix). Identification therefore rests primarily on cross-sectional variation across IGOs rather than within-IGO change over time. The panel structure serves two purposes: it allows year fixed effects to absorb global time trends that could confound the cross-sectional relationship, and it accommodates gradual shifts in membership composition as countries join, exit, or experience regime transitions. The latter is theoretically important because the regime composition of an IGO is not fixed at founding — it evolves as membership changes — and the panel structure allows this variation to be incorporated into the estimation of the main relationship. The core estimand, however, is the cross-sectional association between authoritarian membership composition and amendment flexibility, and results should be interpreted accordingly.
+Identification rests primarily on cross-sectional variation across IGOs rather than within-IGO change over time. Constitutional pooling rules are highly stable within IGOs over the observation period — 61 of 75 IGOs never alter their amendment procedures (see Table~\ref{tab:stability} in the appendix). Identification therefore rests primarily on cross-sectional variation across IGOs rather than within-IGO change over time. The panel structure serves two purposes: it allows year fixed effects to absorb global time trends that could confound the cross-sectional relationship, and it accommodates gradual shifts in membership composition as countries join, exit, or experience regime transitions. The latter is theoretically important because the regime composition of an IGO is not fixed at founding. It evolves as membership changes  and the panel structure allows this variation to be incorporated into the estimation of the main relationship. The core estimand, however, is the cross-sectional association between authoritarian membership composition and amendment flexibility, and results should be interpreted accordingly.
 
-The main estimates rely on a linear panel model, which treats the constitutional pooling score as a continuous outcome distributed uniformly across its range. Two features of the dependent variable merit attention. First, the distribution is left-skewed and bounded at zero, raising the possibility that OLS underestimates the true relationship by treating observed zeros as ordinary low values rather than censored outcomes. Second, zeros may reflect a qualitatively distinct state — IGOs that have adopted no amendment flexibility whatsoever — rather than simply a low value on a continuum, in which case pooling the zeros with positive observations in a single linear model could obscure heterogeneity in the data-generating process.
+The main estimates rely on a linear panel model, which treats the constitutional pooling score as a continuous outcome distributed uniformly across its range. Two features of the dependent variable merit attention. First, the distribution is left-skewed and bounded at zero, raising the possibility that OLS underestimates the true relationship by treating observed zeros as ordinary low values rather than censored outcomes. Second, zeros may reflect a qualitatively distinct state, IGOs that have adopted no amendment flexibility whatsoever, rather than simply a low value on a continuum, in which case pooling the zeros with positive observations in a single linear model could obscure heterogeneity in the data-generating process.
 
 
-To address both concerns, I estimate two alternative models reported in the appendix. First, a Tobit model with left-censoring at zero and right-censoring at one treats observed zeros as censored realizations of a latent flexibility score that may extend below the observable boundary, directly addressing the first concern. Second, a hurdle model separates the decision to adopt any amendment flexibility at all from the decision about how much flexibility to adopt conditional on having some, directly addressing the second concern. Across both models, the negative relationship between authoritarian IGO composition and constitutional pooling holds at conventional levels of statistical significance, and the estimated effects are somewhat larger in magnitude than the OLS estimates. This is consistent with the expectation that linear regression produces conservative estimates when the outcome is censored or structurally heterogeneous. The linear model is nonetheless retained as the main specification for two reasons: it is directly comparable to existing empirical work on IGO institutional design, and its coefficients are more straightforwardly interpretable in substantive terms. The robustness checks confirm that the main finding is not an artifact of these modeling assumptions.
+To address both concerns, I estimate two alternative models reported in the appendix. To confirm robustness to alternative modeling strategies, Tobit and hurdle model estimates are reported in Tables ~\ref{app:tobit} and~\ref{app:hurdle
+} in the appendix. First, a Tobit model with left-censoring at zero and right-censoring at one treats observed zeros as censored realizations of a latent flexibility score that may extend below the observable boundary, directly addressing the first concern. Second, a hurdle model separates the decision to adopt any amendment flexibility at all from the decision about how much flexibility to adopt conditional on having some, directly addressing the second concern. Across both models, the negative relationship between authoritarian IGO composition and constitutional pooling holds at conventional levels of statistical significance, and the estimated effects are somewhat larger in magnitude than the OLS estimates. This is consistent with the expectation that linear regression produces conservative estimates when the outcome is censored or structurally heterogeneous. The linear model is nonetheless retained as the main specification for two reasons: it is directly comparable to existing empirical work on IGO institutional design, and its coefficients are more straightforwardly interpretable in substantive terms. The robustness checks confirm that the main finding is not an artifact of these modeling assumptions.
 
 \begin{figure}[H]
 \centering
@@ -238,7 +244,7 @@ Using the panel data with the unit of analysis at IGO-year, I ran regression mod
 \label{fig:coef}
 \end{figure}
 
-Figure~\ref{fig:coef} presents coefficient estimates from a linear panel model examining the relationship between the average polyarchy score of an IGO's member states and constitutional pooling. Polyarchy is negatively associated with constitutional pooling and statistically significant at $95\%$. A one-unit increase in the average polyarchy score is associated with a 0.312-point decrease in constitutional pooling, meaning that less democratic IGOs adopt significantly more flexible amendment procedures. This result is robust across alternative operationalizations of regime composition, including the percentage of democratic members, median, and the liberal democracy index, as shown in \ref{app:alterantive_rob}.
+Figure~\ref{fig:coef} and appendix ~\ref{app:coef_table} presents coefficient estimates from a linear panel model examining the relationship between the average polyarchy score of an IGO's member states and constitutional pooling. Polyarchy is negatively associated with constitutional pooling and statistically significant at $95\%$. A one-unit increase in the average polyarchy score is associated with a 0.312-point decrease in constitutional pooling, meaning that less democratic IGOs adopt significantly more flexible amendment procedures. This result is robust across alternative operationalizations of regime composition, including the percentage of democratic members, median, and the liberal democracy index, as shown in Table ~\ref{app:alterantive_rob}.
 
 
 Among the control variables, economic concentration within the IGO and organizational size are both positively associated with pooling, while alliance density is negatively associated. These patterns are consistent with theoretical expectations but are not the primary focus of this analysis. Political and social purpose classification, preference heterogeneity, and GDP per capita show limited or inconsistent effects across specifications and are not interpreted substantively here.
@@ -255,7 +261,6 @@ Second, the findings suggest a need to rethink the strategic behavior of autocra
 
 Third, this paper underscores the importance of moving beyond aggregate measures of institutional design toward fine-grained theoretical frameworks and hypothesis testing that focus on specific institutional domains. Much of the existing literature treats pooling or delegation as broad, umbrella concepts that encompass a wide range of institutional features, ranging from voting procedures for policy decisions to rules governing new member accession or dispute settlement. While useful for general comparisons, these aggregate indicators can obscure the distinct political logics that operate in different functional areas of institutional design. In contrast, this paper's focus on amendment flexibility---rules governing how constitutional change occurs within IGOs---offers a more precise lens through which to observe strategic calculations by authoritarian states. By isolating this specific design feature, the analysis reveals a clear and consistent pattern: authoritarian regimes are more likely to endorse flexible, majority-based procedures for constitutional reform, particularly when embedded in ideologically aligned institutional environments. As such, the paper calls for greater theoretical and empirical attention to domain-specific variation in institutional rules, and how distinct elements of organizational design reflect the unique preferences, constraints, and power calculations of their member states. Future research could supplement these findings with case studies to further unpack the political calculations behind authoritarian cooperation in IGO governance.
 
-\newpage
 \printbibliography
 
 %------------------------------------------------------------
@@ -263,32 +268,28 @@ Third, this paper underscores the importance of moving beyond aggregate measures
 %------------------------------------------------------------
 \appendix
 
-\section{Descriptive Table}
-\begin{table}[H]
-\centering
-\label{app:stability}
-\input{results/tableA3_stability}
-\end{table}
+
 
 \section{Coefficient Table}
 \begin{table}[H]
 \centering
-\label{app:coef_table_main}
-\input{results/table1_main.tex}
+\label{app:coef_table}
+\input{results/table1_main}
 \end{table}
 
-\section{Robustness Checks}
+\section{Robustness Checks: Alternative Democracy Measures}
 \begin{table}[H]
 \centering
 \label{app:alterantive_rob}
 \input{results/tableA1_robustness}
 \end{table}
 
+
 \section{Tobit Models}
 \begin{table}[H]
 \centering
 \label{app:tobit}
-.tex}
+\input{results/tableA2_tobit}
 \end{table}
 
 \section{Hurdle Model}
