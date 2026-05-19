@@ -234,31 +234,28 @@ modelsummary(
   coef_omit = "Intercept",
   gof_map   = c("nobs", "r.squared", "adj.r.squared"),
   title     = "Constitutional Pooling and IGO Regime Composition",
-  notes     = list(
-    "Year fixed effects. Cluster-robust SEs at IGO level.",
-    "+ p < 0.1, * p < 0.05, ** p < 0.01, *** p < 0.001"
-  ),
+  notes     = "Year fixed effects. Cluster-robust SEs at IGO level.",
   output    = "~/Desktop/igo_flexibility/results/table1_main.tex",
   booktabs  = TRUE,
   escape    = FALSE,
-  float     = TRUE        # let it be a proper float
+  float     = TRUE
 )
-
 # ── 3. ROBUSTNESS TABLE → .tex for Overleaf ──────────────────────────────────
 modelsummary(
   rob_models,
   vcov      = rob_vcovs,
-  stars     = TRUE,
+  stars     = c("+" = 0.1, "*" = 0.05, "**" = 0.01, "***" = 0.001),
   coef_map  = cm,
   coef_omit = "Intercept",
   gof_map   = c("nobs", "r.squared", "adj.r.squared"),
-  title     = "Robustness: Alternative Democracy Measures",
+  title     = "Alternative measures of democracy",
   notes     = "Year fixed effects. Cluster-robust SEs at IGO level.",
   output    = "~/Desktop/igo_flexibility/results/tableA1_robustness.tex",
   booktabs  = TRUE,
   escape    = FALSE,
-  float     = FALSE       # ← this is the key fix
+  float     = TRUE
 )
+
 ```
 
 
