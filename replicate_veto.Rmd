@@ -229,15 +229,19 @@ ggsave(
 modelsummary(
   main_models,
   vcov      = main_vcovs,
-  stars     = TRUE,
+  stars     = c("+" = 0.1, "*" = 0.05, "**" = 0.01, "***" = 0.001),
   coef_map  = cm,
   coef_omit = "Intercept",
   gof_map   = c("nobs", "r.squared", "adj.r.squared"),
-  notes     = "Year fixed effects. Cluster-robust SEs at IGO level.",
+  title     = "Constitutional Pooling and IGO Regime Composition",
+  notes     = list(
+    "Year fixed effects. Cluster-robust SEs at IGO level.",
+    "+ p < 0.1, * p < 0.05, ** p < 0.01, *** p < 0.001"
+  ),
   output    = "~/Desktop/igo_flexibility/results/table1_main.tex",
   booktabs  = TRUE,
   escape    = FALSE,
-  float     = FALSE
+  float     = TRUE        # let it be a proper float
 )
 
 # ── 3. ROBUSTNESS TABLE → .tex for Overleaf ──────────────────────────────────
