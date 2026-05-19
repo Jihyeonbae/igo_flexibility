@@ -309,6 +309,56 @@ med_result_exec <- mediate(
   robustSE = TRUE,
   sims     = 1000
 )
-summary(med_result_exec)
+
+
+summary(out_model_exec)
+
+# ── MEDIATION: Through political heterogeneity (polyarchy_sd) ────────────────
+med_model_polsd <- lm(
+  polyarchy_sd ~ polyarchy + number + 
+    gdp_cap + trade + globalization + 
+    alliances + ideal_sd,
+  data = igo_analysis
+)
+
+out_model_polsd <- lm(
+  poolconstit ~ polyarchy + polyarchy_sd + 
+    number + hh_gdp + gdp_cap + 
+    trade + globalization + alliances + ideal_sd,
+  data = igo_analysis
+)
+
+med_result_polsd <- mediate(
+  med_model_polsd, out_model_polsd,
+  treat    = "polyarchy",
+  mediator = "polyarchy_sd",
+  robustSE = TRUE,
+  sims     = 1000
+)
+summary(med_result_polsd)
+
+# ── MEDIATION: Through preference heterogeneity (ideal_sd) ───────────────────
+med_model_idealsd <- lm(
+  ideal_sd ~ polyarchy + number + 
+    gdp_cap + trade + globalization + 
+    alliances + polyarchy_sd,
+  data = igo_analysis
+)
+
+out_model_idealsd <- lm(
+  poolconstit ~ polyarchy + ideal_sd + 
+    number + hh_gdp + gdp_cap + 
+    trade + globalization + alliances + polyarchy_sd,
+  data = igo_analysis
+)
+
+med_result_idealsd <- mediate(
+  med_model_idealsd, out_model_idealsd,
+  treat    = "polyarchy",
+  mediator = "ideal_sd",
+  robustSE = TRUE,
+  sims     = 1000
+)
+summary(med_result_idealsd)
 ```
 
